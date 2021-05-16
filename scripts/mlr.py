@@ -9,6 +9,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_validate
 
 np.random.seed(0)
 
@@ -49,10 +50,10 @@ mlr_model.fit(X, Y)
 print(mlr_model.coef_)
 print(mlr_model.intercept_)
 # Results
-print(f'Source c0 = {b0}\t Model c0 = {mlr_model.intercept_:.2f}\tRelative difference {100*(b0-mlr_model.intercept_)/mlr_model.intercept_:.2f}%')
-print(f'Source c1 = {b1}\t Model c1 = {mlr_model.coef_[0]:.2f}\tRelative difference {100*(b1-mlr_model.coef_[0])/mlr_model.coef_[0]:.2f}%')
-print(f'Source c2 = {b2}\t Model c2 = {mlr_model.coef_[1]:.2f}\tRelative difference {100*(b2-mlr_model.coef_[1])/mlr_model.coef_[1]:.2f}%')
-print(f'Source c3 = {b3}\t Model c3 = {mlr_model.coef_[2]:.2f}\tRelative difference {100*(b3-mlr_model.coef_[2])/mlr_model.coef_[2]:.2f}%')
+print(f'Source b0 = {b0}\t Model b0 = {mlr_model.intercept_:.2f}\tRelative difference {100*(b0-mlr_model.intercept_)/mlr_model.intercept_:.2f}%')
+print(f'Source b1 = {b1}\t Model b1 = {mlr_model.coef_[0]:.2f}\tRelative difference {100*(b1-mlr_model.coef_[0])/mlr_model.coef_[0]:.2f}%')
+print(f'Source b2 = {b2}\t Model b2 = {mlr_model.coef_[1]:.2f}\tRelative difference {100*(b2-mlr_model.coef_[1])/mlr_model.coef_[1]:.2f}%')
+print(f'Source b3 = {b3}\t Model b3 = {mlr_model.coef_[2]:.2f}\tRelative difference {100*(b3-mlr_model.coef_[2])/mlr_model.coef_[2]:.2f}%')
 
 # Predictions
 new_obs = 100
@@ -73,4 +74,13 @@ plt.plot(X_pred, Y_pred, 'r-')
 plt.show()
 
 # Model Evaluation
-results = cross_validate()
+# K-fold Cross Validation
+K = 5
+print(f'Number of folds = {K}\n')
+error = 'neg_mean_squared_error'    # NOTE: MSE = RSS/N
+results = cross_validate(mlr_model, X, Y, cv=K, scoring=error)
+
+# Error for each fold and average error over the folds:
+errors = -results['test_score']
+print(f'Error for each fold: {errors}')
+print(f'Error averaged on all folds: {errors.mean()}')
